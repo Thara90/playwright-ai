@@ -1,24 +1,37 @@
 import { generateRegistrationData } from './helpreBase';
 
 export class RegisterPage {
-  constructor(public page) {}
+  firstNameInput;
+  lastNameInput;
+  dobInput;
+  streetInput;
+  postalCodeInput;
+  cityInput;
+  stateInput;
+  countrySelect;
+  phoneInput;
+  emailInput;
+  passwordInput;
+  submitButton;
+  myAccountHeading;
 
-  // Locators
-  get firstNameInput() { return this.page.locator('[data-test="first-name"]'); }
-  get lastNameInput() { return this.page.locator('[data-test="last-name"]'); }
-  get dobInput() { return this.page.locator('[data-test="dob"]'); }
-  get streetInput() { return this.page.locator('[data-test="street"]'); }
-  get postalCodeInput() { return this.page.locator('[data-test="postal_code"]'); }
-  get cityInput() { return this.page.locator('[data-test="city"]'); }
-  get stateInput() { return this.page.locator('[data-test="state"]'); }
-  get countrySelect() { return this.page.locator('[data-test="country"]'); }
-  get phoneInput() { return this.page.locator('[data-test="phone"]'); }
-  get emailInput() { return this.page.locator('[data-test="email"]'); }
-  get passwordInput() { return this.page.locator('[data-test="password"]'); }
-  get submitButton() { return this.page.locator('[data-test="register-submit"]'); }
-  get myAccountHeading() { return this.page.getByRole('heading', { name: 'My account' }); }
+  constructor(public page) {
+    this.firstNameInput = this.page.locator('[data-test="first-name"]');
+    this.lastNameInput = this.page.locator('[data-test="last-name"]');
+    this.dobInput = this.page.locator('[data-test="dob"]');
+    this.streetInput = this.page.locator('[data-test="street"]');
+    this.postalCodeInput = this.page.locator('[data-test="postal_code"]');
+    this.cityInput = this.page.locator('[data-test="city"]');
+    this.stateInput = this.page.locator('[data-test="state"]');
+    this.countrySelect = this.page.locator('[data-test="country"]');
+    this.phoneInput = this.page.locator('[data-test="phone"]');
+    this.emailInput = this.page.locator('[data-test="email"]');
+    this.passwordInput = this.page.locator('[data-test="password"]');
+    this.submitButton = this.page.locator('[data-test="register-submit"]');
+    this.myAccountHeading = this.page.getByRole('heading', { name: 'My account' });
+  }
 
-
+  // Functions
   async fillRegistrationForm(data?) {
     // If no data is provided, generate it
     const formData = data || generateRegistrationData();
