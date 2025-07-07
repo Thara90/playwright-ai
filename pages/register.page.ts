@@ -16,12 +16,6 @@ export class RegisterPage {
   get submitButton() { return this.page.locator('[data-test="register-submit"]'); }
   get myAccountHeading() { return this.page.getByRole('heading', { name: 'My account' }); }
 
-  // Functions
-  async goto() {
-    await this.page.goto('https://practicesoftwaretesting.com/');
-    await this.page.getByRole('menuitem', { name: 'Sign in' }).click();
-    await this.page.getByRole('link', { name: 'Register your account' }).click();
-  }
 
   async fillRegistrationForm({
     firstName,
