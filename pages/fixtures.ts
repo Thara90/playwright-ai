@@ -2,7 +2,6 @@ import { test as base } from '@playwright/test';
 import { LoginPage } from './login.page';
 import { RegisterPage } from './register.page';
 
-// Extend base test with page objects
 export const test = base.extend<{
   loginPage: LoginPage;
   registerPage: RegisterPage;

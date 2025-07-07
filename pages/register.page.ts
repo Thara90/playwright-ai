@@ -1,3 +1,5 @@
+import { generateRegistrationData } from './helpreBase';
+
 export class RegisterPage {
   constructor(public page) {}
 
@@ -17,30 +19,20 @@ export class RegisterPage {
   get myAccountHeading() { return this.page.getByRole('heading', { name: 'My account' }); }
 
 
-  async fillRegistrationForm({
-    firstName,
-    lastName,
-    dob,
-    street,
-    postalCode,
-    city,
-    state,
-    country,
-    phone,
-    email,
-    password
-  }) {
-    await this.firstNameInput.fill(firstName);
-    await this.lastNameInput.fill(lastName);
-    await this.dobInput.fill(dob);
-    await this.streetInput.fill(street);
-    await this.postalCodeInput.fill(postalCode);
-    await this.cityInput.fill(city);
-    await this.stateInput.fill(state);
-    await this.countrySelect.selectOption(country);
-    await this.phoneInput.fill(phone);
-    await this.emailInput.fill(email);
-    await this.passwordInput.fill(password);
+  async fillRegistrationForm(data?) {
+    // If no data is provided, generate it
+    const formData = data || generateRegistrationData();
+    await this.firstNameInput.fill(formData.firstName);
+    await this.lastNameInput.fill(formData.lastName);
+    await this.dobInput.fill(formData.dob);
+    await this.streetInput.fill(formData.street);
+    await this.postalCodeInput.fill(formData.postalCode);
+    await this.cityInput.fill(formData.city);
+    await this.stateInput.fill(formData.state);
+    await this.countrySelect.selectOption(formData.country);
+    await this.phoneInput.fill(formData.phone);
+    await this.emailInput.fill(formData.email);
+    await this.passwordInput.fill(formData.password);
   }
 
   async submit() {
@@ -48,6 +40,9 @@ export class RegisterPage {
   }
 
   async assertRegistrationSuccess() {
-    await this.myAccountHeading.waitFor({ state: 'visible' });
+    // Wait for the registration network request to succeed with 201
+    await this.page.waitForResponse(response => {
+      return response.url().includes('/users/register') && response.status() === 201;
+    });
   }
 }
