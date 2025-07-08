@@ -3,12 +3,16 @@ export class LoginPage {
   passwordInput;
   submitButton;
   myAccountHeading;
+  ddNavigationMenu;
+  signOut;
 
   constructor(public page) {
-    this.emailInput = this.page.locator('[data-test="email"]');
-    this.passwordInput = this.page.locator('[data-test="password"]');
-    this.submitButton = this.page.locator('[data-test="login-submit"]');
-    this.myAccountHeading = this.page.getByRole('heading', { name: 'My account' });
+    this.emailInput = page.locator('[data-test="email"]');
+    this.passwordInput = page.locator('[data-test="password"]');
+    this.submitButton = page.locator('[data-test="login-submit"]');
+    this.myAccountHeading =page.getByRole('heading', { name: 'My account' });
+    this.ddNavigationMenu = page.locator('[data-test="nav-menu"]');
+    this.signOut = page.locator('[data-test="nav-sign-out"]');
   }
 
   // Functions
@@ -25,5 +29,10 @@ export class LoginPage {
 
   async assertLoginSuccess() {
     await this.myAccountHeading.waitFor({ state: 'visible' });
+  }
+
+  async logout() {
+    await this.ddNavigationMenu.click();
+    await this.signOut.click();
   }
 }

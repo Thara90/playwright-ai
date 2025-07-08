@@ -16,24 +16,22 @@ export class RegisterPage {
   myAccountHeading;
 
   constructor(public page) {
-    this.firstNameInput = this.page.locator('[data-test="first-name"]');
-    this.lastNameInput = this.page.locator('[data-test="last-name"]');
-    this.dobInput = this.page.locator('[data-test="dob"]');
-    this.streetInput = this.page.locator('[data-test="street"]');
-    this.postalCodeInput = this.page.locator('[data-test="postal_code"]');
-    this.cityInput = this.page.locator('[data-test="city"]');
-    this.stateInput = this.page.locator('[data-test="state"]');
-    this.countrySelect = this.page.locator('[data-test="country"]');
-    this.phoneInput = this.page.locator('[data-test="phone"]');
-    this.emailInput = this.page.locator('[data-test="email"]');
-    this.passwordInput = this.page.locator('[data-test="password"]');
-    this.submitButton = this.page.locator('[data-test="register-submit"]');
-    this.myAccountHeading = this.page.getByRole('heading', { name: 'My account' });
+    this.firstNameInput = page.locator('[data-test="first-name"]');
+    this.lastNameInput = page.locator('[data-test="last-name"]');
+    this.dobInput = page.locator('[data-test="dob"]');
+    this.streetInput = page.locator('[data-test="street"]');
+    this.postalCodeInput = page.locator('[data-test="postal_code"]');
+    this.cityInput = page.locator('[data-test="city"]');
+    this.stateInput = page.locator('[data-test="state"]');
+    this.countrySelect = page.locator('[data-test="country"]');
+    this.phoneInput = page.locator('[data-test="phone"]');
+    this.emailInput = page.locator('[data-test="email"]');
+    this.passwordInput = page.locator('[data-test="password"]');
+    this.submitButton = page.locator('[data-test="register-submit"]');
+    this.myAccountHeading = page.getByRole('heading', { name: 'My account' });
   }
 
-  // Functions
   async fillRegistrationForm(data?) {
-    // If no data is provided, generate it
     const formData = data || generateRegistrationData();
     await this.firstNameInput.fill(formData.firstName);
     await this.lastNameInput.fill(formData.lastName);
