@@ -1,14 +1,19 @@
 import { test, expect } from '@playwright/test';
-
-const API_BASE_URL = 'https://api.practicesoftwaretesting.com';
+import { BrandApiClient } from './clients/brand.api';
 
 test.describe('Brand API Tests', () => {
+    let brandApi: BrandApiClient;
     let brandId: string;
 
-    test('should get all brands', async ({ request }) => {
-        const response = await request.get(`${API_BASE_URL}/brands`);
+    test.beforeEach(async ({ request }) => {
+        brandApi = new BrandApiClient(request);
+        // Login before each test
+        await brandApi.login('admin@practicesoftwaretesting.com', 'welcome01');
+    });
+
+    test('should get all brands', async () => {
+        const { response, data: brands } = await brandApi.getAllBrands();
         expect(response.ok()).toBeTruthy();
-        const brands = await response.json();
         expect(Array.isArray(brands)).toBeTruthy();
         expect(brands.length).toBeGreaterThan(0);
         // Verify the structure of a brand object
@@ -17,31 +22,27 @@ test.describe('Brand API Tests', () => {
         expect(brands[0]).toHaveProperty('slug');
     });
 
-    test('should get a specific brand', async ({ request }) => {
+    test('should get a specific brand', async () => {
         // First get all brands to get a valid ID
-        const brandsResponse = await request.get(`${API_BASE_URL}/brands`);
-        const brands = await brandsResponse.json();
+        const { data: brands } = await brandApi.getAllBrands();
         const firstBrandId = brands[0].id;
 
         // Get specific brand
-        const response = await request.get(`${API_BASE_URL}/brands/${firstBrandId}`);
+        const { response, data: brand } = await brandApi.getBrandById(firstBrandId);
         expect(response.ok()).toBeTruthy();
-        const brand = await response.json();
         expect(brand).toHaveProperty('id', firstBrandId);
         expect(brand).toHaveProperty('name');
         expect(brand).toHaveProperty('slug');
     });
 
-    test('should get brand products', async ({ request }) => {
+    test('should get brand products', async () => {
         // First get all brands to get a valid ID
-        const brandsResponse = await request.get(`${API_BASE_URL}/brands`);
-        const brands = await brandsResponse.json();
+        const { data: brands } = await brandApi.getAllBrands();
         const firstBrandId = brands[0].id;
 
         // Get products for the brand
-        const response = await request.get(`${API_BASE_URL}/brands/${firstBrandId}/products`);
+        const { response, data: products } = await brandApi.getBrandProducts(firstBrandId);
         expect(response.ok()).toBeTruthy();
-        const products = await response.json();
         expect(Array.isArray(products.data)).toBeTruthy();
         
         // Verify product structure if any products exist
@@ -54,15 +55,57 @@ test.describe('Brand API Tests', () => {
     });
 
     // Negative test cases
-    test('should handle non-existent brand ID', async ({ request }) => {
+    test('should handle non-existent brand ID', async () => {
         const nonExistentId = '99999';
-        const response = await request.get(`${API_BASE_URL}/brands/${nonExistentId}`);
+        const { response } = await brandApi.getBrandById(nonExistentId);
         expect(response.status()).toBe(404);
     });
 
-    test('should handle invalid brand ID format', async ({ request }) => {
+    test('should handle invalid brand ID format', async () => {
         const invalidId = 'invalid-id';
-        const response = await request.get(`${API_BASE_URL}/brands/${invalidId}`);
+        const { response } = await brandApi.getBrandById(invalidId);
         expect(response.status()).toBe(404);
+    });
+
+    // POST endpoint tests
+    test('should create a new brand', async () => {
+        const brandData = {
+            name: `Test Brand ${Date.now()}`,
+            slug: `test-brand-${Date.now()}`
+        };
+
+        const { response, data: newBrand } = await brandApi.createBrand(brandData);
+        expect(response.status()).toBe(201);
+        expect(newBrand).toHaveProperty('id');
+        expect(newBrand.name).toBe(brandData.name);
+        expect(newBrand.slug).toBe(brandData.slug);
+
+        // Store brand ID for cleanup
+        brandId = newBrand.id;
+    });
+
+    test('should not create brand with missing required fields', async () => {
+        const { response, data: error } = await brandApi.createBrand({} as any);
+        expect(response.status()).toBe(400);
+        expect(error).toHaveProperty('message');
+    });
+
+    test('should not create brand without authentication', async ({ request }) => {
+        // Create new client without auth
+        const unauthenticatedApi = new BrandApiClient(request);
+        const brandData = {
+            name: 'Test Brand',
+            slug: 'test-brand'
+        };
+
+        const { response } = await unauthenticatedApi.createBrand(brandData);
+        expect(response.status()).toBe(401);
+    });
+
+    // Cleanup after tests
+    test.afterAll(async () => {
+        if (brandId) {
+            await brandApi.deleteBrand(brandId);
+        }
     });
 });
